@@ -1,7 +1,9 @@
 from django.shortcuts import get_object_or_404, render
 from rest_framework import viewsets,generics
-from  users.models import Account
+from django.contrib.auth.models import User
 from rest_framework.response import Response
+
+from users.models import Account
 from . models import FriendRequest
 from . serializers import FriendRequestSerializer
 from rest_framework import permissions
@@ -24,19 +26,19 @@ class FriendViewSet(viewsets.ViewSet):
     def get_queryset(self):
         user=self.request.user.pk
         q1=FriendRequest.objects.filter(request_from=user,status='Accepted')
-        q2=FriendRequest.objects.filter(request_to=user,status='Accepted')
+        # q2=FriendRequest.objects.filter(request_to=user,status='Accepted')
         result=[]
-        if q1.exists and not q2.exists:
+        if q1.exists :
             for i in range(len(q1.values())):
                 result.append(q1.values()[i]['request_to_id'])
-        elif not q1.exists and q2.exists:
-            for i in range(len(q2.values())):
-                result.append(q2.values()[i]['request_from_id'])
-        elif q1.exists and q2.exists:
-            for i in range(len(q1.values())):
-                result.append(q1.values()[i]['request_to_id'])
-            for i in range(len(q2.values())):
-                result.append(q2.values()[i]['request_from_id'])
+        # elif not q1.exists and q2.exists:
+        #     for i in range(len(q2.values())):
+        #         result.append(q2.values()[i]['request_from_id'])
+        # elif q1.exists and q2.exists:
+        #     for i in range(len(q1.values())):
+        #         result.append(q1.values()[i]['request_to_id'])
+        #     for i in range(len(q2.values())):
+        #         result.append(q2.values()[i]['request_from_id'])
         else:
             pass  
         friends=Account.objects.filter(id__in=result).values()
@@ -53,7 +55,7 @@ class FriendViewSet(viewsets.ViewSet):
             elif self.request.method=='PUT' or self.request.method=='DELETE':
                 return friend
             
-        except Account.DoesNotExist:
+        except User.DoesNotExist:
                 return Response(status=status.HTTP_404_NOT_FOUND)
 
     def list(self, request):
@@ -62,7 +64,7 @@ class FriendViewSet(viewsets.ViewSet):
         return Response(serializer.data)
 
     def create(self, request):
-
+        owner=request.user
         request.data['_mutable']=True
         request.data['request_from']=self.request.user.pk
         request.data['_mutable']=False
@@ -79,7 +81,7 @@ class FriendViewSet(viewsets.ViewSet):
 
             serializer = FriendRequestSerializer(data=request.data)
             if serializer.is_valid():
-                serializer.save()
+                serializer.save(owner=owner)
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
         
 

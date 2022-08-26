@@ -1,9 +1,9 @@
-
+from django.core.validators import RegexValidator
 from django.db import models
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
 
 # Create your models here.
-
+PHONE_NUMBER_REGEX = RegexValidator(r'^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$', 'only valid mobile is required')
 
 
 class MyAccountManager(BaseUserManager):
@@ -46,7 +46,7 @@ class MyAccountManager(BaseUserManager):
 class Account(AbstractBaseUser):
     username        =models.CharField(max_length=50)
     email           =models.EmailField(max_length=100,unique=True)   
-    mobile          =models.CharField(max_length=10,unique=True,null=True)
+    mobile          =models.CharField(max_length=14, validators=[PHONE_NUMBER_REGEX],unique=True,null=True)
     password        =models.CharField(max_length=20,blank=False,null=False)
     joined_date     =models.DateTimeField(auto_now_add=True)
     last_login      =models.DateTimeField(auto_now=True)
