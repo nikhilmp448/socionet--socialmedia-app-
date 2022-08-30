@@ -17,7 +17,7 @@ from rest_framework.parsers import JSONParser
 # Create your views here.
 
 
-class FriendViewSet(viewsets.ViewSet):
+class FollowViewSet(viewsets.ViewSet):
     """
     Friends
     """
@@ -68,8 +68,8 @@ class FriendViewSet(viewsets.ViewSet):
         request.data['_mutable']=True
         request.data['request_from']=self.request.user.pk
         request.data['_mutable']=False
-        already_friend=FriendRequest.objects.filter(request_from=request.data['request_from'],request_to=request.data['request_to'],status='Accepted').exists()
-        already_sent=FriendRequest.objects.filter(request_from=request.data['request_from'],request_to=request.data['request_to'],status='pending').exists()
+        already_friend = FriendRequest.objects.filter(request_from=request.data['request_from'],request_to=request.data['request_to'],status='Accepted').exists()
+        already_sent   = FriendRequest.objects.filter(request_from=request.data['request_from'],request_to=request.data['request_to'],status= 'pending').exists()
 
         if already_friend:
 
@@ -110,21 +110,21 @@ class FriendViewSet(viewsets.ViewSet):
     def find_friends(self,request):
         user=self.request.user.pk
         q1=FriendRequest.objects.filter(request_from=user,status='Accepted')
-        q2=FriendRequest.objects.filter(request_to=user,status='Accepted')
+        # q2=FriendRequest.objects.filter(request_to=user,status='Accepted')
         result=[user]
-        if q1.exists and not q2.exists:
+        if q1.exists:
             for i in range(len(q1.values())):
                 result.append(q1.values()[i]['request_to_id'])
-        elif not q1.exists and q2.exists:
-            for i in range(len(q2.values())):
-                result.append(q2.values()[i]['request_from_id'])
-        elif q1.exists and q2.exists:
-            for i in range(len(q1.values())):
-                result.append(q1.values()[i]['request_to_id'])
-            for i in range(len(q2.values())):
-                result.append(q2.values()[i]['request_from_id'])
-        else:
-            pass     
+        # elif not q1.exists and q2.exists:
+        #     for i in range(len(q2.values())):
+        #         result.append(q2.values()[i]['request_from_id'])
+        # elif q1.exists and q2.exists:
+        #     for i in range(len(q1.values())):
+        #         result.append(q1.values()[i]['request_to_id'])
+        #     for i in range(len(q2.values())):
+        #         result.append(q2.values()[i]['request_from_id'])
+        # else:
+        #     pass     
         find_friends=Account.objects.exclude(id__in=result)
         serializer = UserSerializer(find_friends, many=True)
         return Response(serializer.data)
@@ -142,6 +142,19 @@ class FriendViewSet(viewsets.ViewSet):
             return Response(serializer.data)
         else:
             return Response({"message":"You have no any incoming requests"})
+
+    @action(detail=False,methods=['GET'])
+    def followers(self,request):
+        followers= FriendRequest.objects.filter(request_to=self.request.user,status='Accepted')
+        if followers.exists():
+            request_from_users=[]
+            for i in range(len(followers.values())):
+                request_from_users.append(followers.values()[i]['request_from_id'])
+            users=Account.objects.filter(id__in=request_from_users).values()
+            serializer = UserSerializer(users, many=True)
+            return Response(serializer.data)
+        else:
+            return Response({"message":"You have no Followes"})
 
 
     @action(detail=True,methods=['PUT'],name='Accept Friend Request')

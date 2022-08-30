@@ -1,6 +1,6 @@
 from api.views import BlacklistTokenUpdateView
 from fgroups.views import group_memberViewSet, groupViewSet
-from friends.views import FriendViewSet
+from friends.views import FollowViewSet
 from votes.views import VoteViewSet
 from comments.views import CommentViewSet
 from posts.views import PostViewSet
@@ -37,7 +37,7 @@ router.register(r'votes',VoteViewSet)
 
 ############# FRIENDS API #####################
 
-router.register(r'friends',FriendViewSet,basename='friends')
+router.register(r'follow',FollowViewSet,basename='follow')
 
 ############# GROUP API #####################
 
