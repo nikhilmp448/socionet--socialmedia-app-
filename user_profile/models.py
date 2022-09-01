@@ -1,3 +1,4 @@
+from pyexpat import model
 from django.db import models
 # from django.contrib.auth.models import User
 from users.models import Account
@@ -23,3 +24,4 @@ class UserProfile(models.Model):
     lives_in=models.CharField(max_length=200,null=True,blank=True)
     studies_at=models.CharField(max_length=200,null=True,blank=True)
     profile_image=models.ImageField(upload_to="profile_image",null=True,blank=True)
+    is_private = models.BooleanField(default=True)

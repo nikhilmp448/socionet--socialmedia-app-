@@ -9,9 +9,9 @@ class FriendRequestSerializer(serializers.ModelSerializer):
         fields=['request_from','request_to','status']
 
 
-        def create(self, validated_data):
-            user = Group_members(
-                member=validated_data['member']
-            )
-            user.save()
-            return user
+        # def create(self, validated_data):
+        #     user = Group_members(
+        #         member=validated_data['member']
+        #     )
+        #     user.save()
+        #     return user

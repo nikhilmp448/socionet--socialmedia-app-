@@ -20,7 +20,7 @@ urlpatterns=[
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('logout/blacklist/',BlacklistTokenUpdateView.as_view(),name="blacklist"),
 
-    path('password/change/',userview.password_change,name="password-change"),
+    # path('password/change/',userview.password_change,name="password-change"),
     path('users_search/', UsersearchView.as_view(), name='user-list'),
 ]
 ############# USER API #####################

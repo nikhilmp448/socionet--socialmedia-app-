@@ -39,18 +39,6 @@ class group_memberViewSet(viewsets.ModelViewSet):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-    # @action(detail=False,methods=['GET'])
-    # def my_groups(self):
-    #     my_group= Group_members.objects.filter(Q(member=self.request.user) | Q(group__owner=self.request.user))
-        # group = []
-        # for x in my_group:
-        #     print(x.group.group_name)
-        #     group.append((x.group.id, x.group.group_name))
-        #     data ={
-        #         "groups" : group
-        #     }
-        # return my_group
-
     def list(self, request):
         groups = Group_members.objects.filter(Q(member=self.request.user) | Q(group__owner=self.request.user))
         result=[]
