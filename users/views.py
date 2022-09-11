@@ -6,7 +6,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import filters,pagination
 from rest_framework.pagination import PageNumberPagination
-from .serializers import UserSerializer
+from .serializers import BlockSerializer, UserSerializer
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from rest_framework import status
@@ -56,6 +56,8 @@ class UserViewSet(viewsets.ViewSet):
     def update(self, request, pk):
         pass
 
+    
+
     @action(detail=True,methods=['POST']) 
     def password_change(self,request,pk):
         user = request.user
@@ -76,9 +78,8 @@ class UserViewSet(viewsets.ViewSet):
             return Response({'detail':'New password field required'})
         elif new_password_confirm is None:
             return Response({'detail':'New password confirm field required'})
-        # return Response({'detail':'New password confirm field required'})
-
-        
+            
+              
 
 class UserRegisterViewSet(viewsets.ViewSet):
 
@@ -90,5 +91,3 @@ class UserRegisterViewSet(viewsets.ViewSet):
             user_profile.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-        

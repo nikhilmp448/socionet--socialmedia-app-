@@ -6,6 +6,7 @@ from fgroups.serializers import Group_memberSerializer, GroupSerializer
 from rest_framework.response import Response
 from django.db.models import Q
 from rest_framework import serializers
+from django.shortcuts import get_object_or_404
 # Create your views here.
 
 
@@ -17,6 +18,17 @@ class groupViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
+
+    def list(self, request):
+        groups = Group_members.objects.filter(Q(member=self.request.user))
+        result=[]
+        if groups.exists :
+            for i in range(len(groups.values())):
+                result.append(groups.values()[i]['group_id'])
+                print(result)
+        group = Groups.objects.filter(Q(id__in = result) | Q(owner=self.request.user)).values()
+        serializer = GroupSerializer(group, many=True)
+        return Response(serializer.data)
 
 class group_memberViewSet(viewsets.ModelViewSet):
     """Group_members"""
@@ -39,12 +51,10 @@ class group_memberViewSet(viewsets.ModelViewSet):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-    def list(self, request):
-        groups = Group_members.objects.filter(Q(member=self.request.user) | Q(group__owner=self.request.user))
-        result=[]
-        if groups.exists :
-            for i in range(len(groups.values())):
-                result.append(groups.values()[i]['group_id'])
-        group = Groups.objects.filter(id__in = result).values()
-        serializer = GroupSerializer(group, many=True)
-        return Response(serializer.data)
+    
+
+    # def retrieve(self, request, pk=None):
+    #     queryset = Group_members.objects.all()
+    #     group = get_object_or_404(queryset, pk=pk)
+    #     serializer = Group_memberSerializer(group)
+    #     return Response(serializer.data)

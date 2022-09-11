@@ -13,8 +13,8 @@ class Groups(models.Model):
         return self.group_name
 
 class Group_members(models.Model):
-    group=models.ForeignKey(Groups,on_delete=models.CASCADE)
-    member = models.ForeignKey(Account,on_delete=models.CASCADE,related_name='group_member')
+    group=models.ForeignKey(Groups,on_delete=models.CASCADE,related_name='group_member')
+    member = models.ForeignKey(Account,on_delete=models.CASCADE,related_name='group')
     is_admin = models.BooleanField(default=False)
 
     def __str__(self):

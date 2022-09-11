@@ -107,26 +107,22 @@ class FollowViewSet(viewsets.ViewSet):
 
     @action(detail=False,methods=['GET'])
     def find_friends(self,request):
-        user=self.request.user.pk
-        q1=FriendRequest.objects.filter(request_from=user,status='Accepted')
-        # q2=FriendRequest.objects.filter(request_to=user,status='Accepted')
-        result=[user]
-        if q1.exists:
-            for i in range(len(q1.values())):
-                result.append(q1.values()[i]['request_to_id'])
-        # elif not q1.exists and q2.exists:
-        #     for i in range(len(q2.values())):
-        #         result.append(q2.values()[i]['request_from_id'])
-        # elif q1.exists and q2.exists:
-        #     for i in range(len(q1.values())):
-        #         result.append(q1.values()[i]['request_to_id'])
-        #     for i in range(len(q2.values())):
-        #         result.append(q2.values()[i]['request_from_id'])
-        # else:
-        #     pass     
-        find_friends=Account.objects.exclude(id__in=result)
-        serializer = UserSerializer(find_friends, many=True)
+        q1=FriendRequest.objects.filter(request_from=request.user,status='Accepted')
+        result=[]
+        for i in range(len(q1.values())):
+            result.append(q1.values()[i]['request_to_id'])
+        find_friends=Account.objects.filter(id__in=result).values()
+        result.clear() 
+        for i in range(len(find_friends.values())):
+            result.append(find_friends.values()[i]['id'])
+        q2=FriendRequest.objects.filter(request_from__in=result,status='Accepted')
+        result.clear()       
+        for i in range(len(q2.values())):
+            result.append(q2.values()[i]['request_to_id'])
+        friends=Account.objects.filter(id__in=result).values()
+        serializer = UserSerializer(friends, many=True)
         return Response(serializer.data)
+
 
 
     @action(detail=False,methods=['GET'])
@@ -213,7 +209,9 @@ class FollowViewSet(viewsets.ViewSet):
 
 
 
+ 
 
+ 
 
 
 

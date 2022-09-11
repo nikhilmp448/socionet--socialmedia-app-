@@ -2,10 +2,11 @@ from rest_framework.response import Response
 from rest_framework.decorators import action
 from user_profile.models import UserProfile
 from users.models import Account
-from .serializers import PostSerializer
-from .models import Post
-from django.shortcuts import render
-from rest_framework import generics
+from .serializers import PostSerializer,StorySerializer
+from .models import Post,Story
+import datetime
+from datetime import timedelta
+from django.utils import timezone 
 from rest_framework import permissions
 from user_profile.permissions import IsOwnerOrReadOnly
 from rest_framework import status, viewsets
@@ -18,6 +19,7 @@ class PostPagination(PageNumberPagination):
     page_size = 10
     page_size_query_param = 'page_size'
     max_page_size = 1000
+
 
 
 class PostViewSet(viewsets.ModelViewSet):
@@ -49,9 +51,9 @@ class PostViewSet(viewsets.ModelViewSet):
 
     @action(detail=False,methods=['GET'])
     def all_posts(self,request):
-        id=self.request.user.pk
+        id = self.request.user.pk
         following = FriendRequest.objects.filter(request_from=id,status='Accepted')
-        result=[id]
+        result = [id]
         for i in range(len(following.values())):
             result.append(following.values()[i]['request_to_id'])
         account=Account.objects.exclude(id__in=result).values()
@@ -62,6 +64,35 @@ class PostViewSet(viewsets.ModelViewSet):
         result.clear()
         for i in range(len(user.values())):
             result.append(user.values()[i]['owner_id'])
-        post=Post.objects.filter(owner__in = result)
+        post = Post.objects.filter(owner__in = result)
         serializer = PostSerializer(post, many=True)
+        return Response(serializer.data)
+
+class storyViewSet(viewsets.ModelViewSet):
+    queryset = Story.objects.all()
+    serializer_class = StorySerializer
+    permission_classes = [permissions.IsAuthenticated]
+    pagination_class = PostPagination
+
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user,expiration_date=timezone.now() + timedelta(minutes=1))
+    
+    def list(self, request):
+        current_time=datetime.datetime.now()
+        expired=Story.objects.filter(expiration_date__lte=current_time)
+        print(expired)
+        expired.delete()
+        user=self.request.user.pk
+        following = FriendRequest.objects.filter(request_from=user,status='Accepted')
+        result=[user]
+        for i in range(len(following.values())):
+            result.append(following.values()[i]['request_to_id'])
+
+        account=Account.objects.filter(id__in=result).values()
+        for i in range(len(account.values())):
+            result.append(account.values()[i]['id'])
+
+        queryset=Story.objects.filter(owner__in= result)
+        # queryset = Story.objects.all()
+        serializer = StorySerializer(queryset, many=True)
         return Response(serializer.data)

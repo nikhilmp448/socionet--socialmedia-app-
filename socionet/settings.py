@@ -40,18 +40,19 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_filters',
+    'blockUser',
     'users',
     'fgroups',
     'friends',
     'votes',
     'comments',
-    # 'chat',
     'user_profile',
     'posts',
     'rest_framework_simplejwt.token_blacklist',
     'rest_framework',
     'rest_framework_simplejwt',
     'corsheaders',
+   
 ]
 
 MIDDLEWARE = [
@@ -122,7 +123,8 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Kolkata'
+
 
 USE_I18N = True
 

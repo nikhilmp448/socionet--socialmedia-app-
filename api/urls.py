@@ -1,9 +1,10 @@
 from api.views import BlacklistTokenUpdateView
+from blockUser.views import UserBlockViewSet
 from fgroups.views import group_memberViewSet, groupViewSet
 from friends.views import FollowViewSet
 from votes.views import VoteViewSet
 from comments.views import CommentViewSet
-from posts.views import PostViewSet
+from posts.views import PostViewSet, storyViewSet
 from django.urls import path
 from users import views as userview
 from rest_framework.routers import DefaultRouter
@@ -28,12 +29,16 @@ urlpatterns=[
 router.register(r'UserRegister',UserRegisterViewSet,basename='UserRegister')
 router.register(r'users', UserViewSet,basename='users')
 router.register(r'profiles',ProfileViewSet)
+router.register(r'Bocked',UserBlockViewSet,basename='Bocked')
+
 
 ############# POST ACTION API #####################
 
 router.register(r'posts',PostViewSet)
 router.register(r'comments',CommentViewSet)
 router.register(r'votes',VoteViewSet)
+router.register(r'story',storyViewSet)
+
 
 ############# FRIENDS API #####################
 
@@ -41,8 +46,8 @@ router.register(r'follow',FollowViewSet,basename='follow')
 
 ############# GROUP API #####################
 
-router.register(r'creategroup',groupViewSet,basename='creategroup')
-router.register(r'group',group_memberViewSet,basename='group')
+router.register(r'group',groupViewSet,basename='group')
+router.register(r'group_member',group_memberViewSet,basename='group_member')
 
 
 

@@ -1,3 +1,4 @@
+from blockUser.models import Userblock
 from user_profile.serializers import ProfileSerializer
 from rest_framework import serializers
 
@@ -19,3 +20,13 @@ class UserSerializer(serializers.ModelSerializer):
         user.set_password(validated_data['password'])
         user.save()
         return user
+
+        
+class BlockSerializer(serializers.ModelSerializer):
+    blocked_user = serializers.ReadOnlyField(source='blocked.username')
+    blocked_by = serializers.ReadOnlyField(source='block_owner.username')
+
+    class Meta:
+        model = Userblock
+        fields = ('id','block_owner','blocked_by','blocked','blocked_user')
+        extra_kwargs={'block_owner':{'write_only':True},'blocked':{'write_only':True,'required':True}}
