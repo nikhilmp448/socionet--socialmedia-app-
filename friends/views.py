@@ -2,6 +2,7 @@ from django.shortcuts import get_object_or_404, render
 from rest_framework import viewsets,generics
 from django.contrib.auth.models import User
 from rest_framework.response import Response
+from blockUser.models import Userblock
 
 from users.models import Account
 from . models import FriendRequest
@@ -10,7 +11,7 @@ from rest_framework import permissions
 from rest_framework.decorators import action
 from user_profile.permissions import IsOwnerOrReadOnly
 from users.serializers import UserSerializer
-from django.http import Http404, request
+from django.http import Http404
 from rest_framework import status
 from rest_framework.parsers import JSONParser
 
@@ -26,13 +27,15 @@ class FollowViewSet(viewsets.ViewSet):
         user=self.request.user.pk
         q1=FriendRequest.objects.filter(request_from=user,status='Accepted')
         # q2=FriendRequest.objects.filter(request_to=user,status='Accepted')
+        blocked_account=Userblock.objects.filter(blocked=self.request.user)
         result=[]
+        block_id=[]
         if q1.exists :
             for i in range(len(q1.values())):
                 result.append(q1.values()[i]['request_to_id'])
-        # elif not q1.exists and q2.exists:
-        #     for i in range(len(q2.values())):
-        #         result.append(q2.values()[i]['request_from_id'])
+    
+        for id in range(len(blocked_account.values())):
+            block_id.append(blocked_account.values()[id]['block_owner_id'])
         # elif q1.exists and q2.exists:
         #     for i in range(len(q1.values())):
         #         result.append(q1.values()[i]['request_to_id'])
@@ -40,7 +43,8 @@ class FollowViewSet(viewsets.ViewSet):
         #         result.append(q2.values()[i]['request_from_id'])
         else:
             pass  
-        friends=Account.objects.filter(id__in=result).values()
+        result=set(result)-set(block_id)
+        friends=Account.objects.filter(id__in=result)
         return friends
 
     def get_object(self,pk):

@@ -6,6 +6,8 @@ from users.serializers import BlockSerializer
 from users. views import UserPagination
 from rest_framework.response import Response
 from rest_framework import status
+from django.shortcuts import get_object_or_404
+
 
 # Create your views here.
 class UserBlockViewSet(viewsets.ViewSet):
@@ -28,3 +30,15 @@ class UserBlockViewSet(viewsets.ViewSet):
                     serializer.save(block_owner=request.user)
                     return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def retrieve(self, request, pk=None):
+        queryset = Userblock.objects.all()
+        user = get_object_or_404(queryset, pk=pk)
+        serializer = BlockSerializer(user)
+        return Response(serializer.data)
+
+    def destroy(self, request, pk) :
+        queryset = Userblock.objects.all()
+        user = get_object_or_404(queryset, pk=pk)
+        user.delete()
+        return Response({'detail':'Account deleted successfully'},status=status.HTTP_200_OK)

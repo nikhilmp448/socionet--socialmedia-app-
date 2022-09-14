@@ -29,6 +29,7 @@ urlpatterns=[
 router.register(r'UserRegister',UserRegisterViewSet,basename='UserRegister')
 router.register(r'users', UserViewSet,basename='users')
 router.register(r'profiles',ProfileViewSet)
+
 router.register(r'Bocked',UserBlockViewSet,basename='Bocked')
 
 

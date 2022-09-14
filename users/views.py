@@ -1,3 +1,4 @@
+from blockUser.models import Userblock
 from user_profile.models import UserProfile
 from user_profile.permissions import IsOwnerOrReadOnly
 from users.models import Account
@@ -35,7 +36,11 @@ class UserViewSet(viewsets.ViewSet):
     pagination_class = UserPagination
     
     def list(self, request):
-        queryset = Account.objects.all()
+        blocked_account=Userblock.objects.filter(blocked=request.user)
+        block_id=[]
+        for id in range(len(blocked_account.values())):
+            block_id.append(blocked_account.values()[id]['block_owner_id'])
+        queryset = Account.objects.exclude(id__in=block_id)
         serializer = UserSerializer(queryset, many=True)
         return Response(serializer.data)
 

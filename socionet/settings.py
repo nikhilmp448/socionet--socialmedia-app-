@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'comments',
     'user_profile',
     'posts',
+    'chat',
     'rest_framework_simplejwt.token_blacklist',
     'rest_framework',
     'rest_framework_simplejwt',
