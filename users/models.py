@@ -1,6 +1,7 @@
 from django.core.validators import RegexValidator
 from django.db import models
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
+from django.contrib.auth.models import PermissionsMixin
 
 # Create your models here.
 PHONE_NUMBER_REGEX = RegexValidator(r'^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$', 'only valid mobile is required')
@@ -41,9 +42,9 @@ class MyAccountManager(BaseUserManager):
         return user
 
 
+AUTH_PROVIDERS = {'facebook':'facebook','google':'google','twitter':'twitter','email':'email'}
 
-
-class Account(AbstractBaseUser):
+class Account(AbstractBaseUser,PermissionsMixin):
     username        =models.CharField(max_length=50)
     email           =models.EmailField(max_length=100,unique=True)   
     mobile          =models.CharField(max_length=14, validators=[PHONE_NUMBER_REGEX],unique=True,null=True)
@@ -54,7 +55,7 @@ class Account(AbstractBaseUser):
     is_active       =models.BooleanField(default=True)
     is_verified     =models.BooleanField(default=False)
     is_superuser    =models.BooleanField(default=False)
-
+    auth_provider = models.CharField(null=True,blank=True,max_length=255, default=AUTH_PROVIDERS.get('email'))
     USERNAME_FIELD  = 'email'
     REQUIRED_FIELDS = ['password']
     

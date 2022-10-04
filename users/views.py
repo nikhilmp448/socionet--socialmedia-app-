@@ -1,4 +1,6 @@
 from blockUser.models import Userblock
+from chat.models import Messages
+from chat.serializers import MessageSerialzer
 from user_profile.models import UserProfile
 from user_profile.permissions import IsOwnerOrReadOnly
 from users.models import Account
@@ -14,6 +16,7 @@ from rest_framework import status
 from rest_framework import permissions
 from rest_framework import generics
 from rest_framework.decorators import action
+from django.db.models import Q
 # Create your views here.
 
 class UserPagination(PageNumberPagination):
@@ -58,8 +61,11 @@ class UserViewSet(viewsets.ViewSet):
         user.delete()
         return Response({'detail':'Account deleted successfully'},status=status.HTTP_200_OK)
 
-    def update(self, request, pk):
-        pass
+    @action(detail = True,methods=['GET'])
+    def chat(self, request, pk):
+        chat = Messages.objects.filter(Q(room__sender = request.user) | Q(room__sender = pk) , Q(room__reciever = pk) | Q(room__reciever = request.user))
+        serializer = MessageSerialzer(chat , many=True)
+        return Response(serializer.data)
 
     
 

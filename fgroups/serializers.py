@@ -13,6 +13,7 @@ class Group_memberSerializer(serializers.ModelSerializer):
 class GroupSerializer(serializers.ModelSerializer):
     
     group_member = Group_memberSerializer(many=True,read_only=True)
+    group_owner = serializers.ReadOnlyField(source='owner.username')
     class Meta:
         model = Groups
-        fields = ['id','group_name','group_member']
+        fields = ['id','group_owner','group_name','group_member']

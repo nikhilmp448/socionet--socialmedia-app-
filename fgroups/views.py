@@ -1,3 +1,4 @@
+from fgroups.permissions import IsGroupOrReadOnly
 from rest_framework import permissions
 from friends.models import FriendRequest
 from rest_framework import status, viewsets
@@ -6,11 +7,18 @@ from fgroups.serializers import Group_memberSerializer, GroupSerializer
 from rest_framework.response import Response
 from django.db.models import Q
 from rest_framework import serializers
+from django.shortcuts import render
 from django.shortcuts import get_object_or_404
+
+from user_profile.permissions import IsOwnerOrReadOnly
+
 # Create your views here.
+def grouproom(request, room_name):
+    return render(request, 'room.html', {
+        'room_name': room_name
+    })
 
-
-class groupViewSet(viewsets.ModelViewSet):
+class groupViewSet(viewsets.ModelViewSet,IsOwnerOrReadOnly):
     """Groups"""
     queryset = Groups.objects.all()
     serializer_class = GroupSerializer
@@ -30,11 +38,12 @@ class groupViewSet(viewsets.ModelViewSet):
         serializer = GroupSerializer(group, many=True)
         return Response(serializer.data)
 
-class group_memberViewSet(viewsets.ModelViewSet):
+
+class group_memberViewSet(viewsets.ModelViewSet,):
     """Group_members"""
     queryset = Group_members.objects.all()
     serializer_class = Group_memberSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated,IsGroupOrReadOnly]
 
     def create(self, request):
         serializer=Group_memberSerializer(data=request.data)

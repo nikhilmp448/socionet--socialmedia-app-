@@ -30,7 +30,7 @@ router.register(r'UserRegister',UserRegisterViewSet,basename='UserRegister')
 router.register(r'users', UserViewSet,basename='users')
 router.register(r'profiles',ProfileViewSet)
 
-router.register(r'Bocked',UserBlockViewSet,basename='Bocked')
+router.register(r'Blocked',UserBlockViewSet,basename='Blocked')
 
 
 ############# POST ACTION API #####################
@@ -49,11 +49,5 @@ router.register(r'follow',FollowViewSet,basename='follow')
 
 router.register(r'group',groupViewSet,basename='group')
 router.register(r'group_member',group_memberViewSet,basename='group_member')
-
-
-
-
-
-
 
 urlpatterns=urlpatterns+router.urls

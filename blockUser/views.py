@@ -41,4 +41,4 @@ class UserBlockViewSet(viewsets.ViewSet):
         queryset = Userblock.objects.all()
         user = get_object_or_404(queryset, pk=pk)
         user.delete()
-        return Response({'detail':'Account deleted successfully'},status=status.HTTP_200_OK)
+        return Response({'detail':'user successfully removed from blocklist'},status=status.HTTP_200_OK)

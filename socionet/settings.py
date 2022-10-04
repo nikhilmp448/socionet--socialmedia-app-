@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_filters',
+    'channels',
     'blockUser',
     'users',
     'fgroups',
@@ -52,7 +53,8 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt.token_blacklist',
     'rest_framework',
     'rest_framework_simplejwt',
-    'corsheaders',
+    'corsheaders',  # required for serving swagger ui's css/js files
+    'drf_yasg',
    
 ]
 
@@ -88,6 +90,15 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'socionet.wsgi.application'
 
+ASGI_APPLICATION = "socionet.asgi.application"
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer"
+    }
+}
+
+
 AUTH_USER_MODEL = 'users.Account'
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
@@ -96,6 +107,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
+       
     }
 }
 
